@@ -54,7 +54,21 @@ if [[ "$IS_SECURE" == "true" ]]; then
     CRSF_ACCESS_TOKEN_VALUE=$(cat cookiesFile | grep -o 'csrf_access_token.*' | cut -f2)
     echo "done"
     # echo "csrf_access_token value: $CRSF_ACCESS_TOKEN_VALUE"
-    
+
+
+    echo "-------------------PROJECT-ID-----------------"
+    curl -X GET "$ALLURE_SERVER/allure-docker-service/projects/$PROJECT_ID" \
+    -H  "accept: */*" \
+    -H 'Content-Type: multipart/form-data' \
+    -H "X-CSRF-TOKEN: $CRSF_ACCESS_TOKEN_VALUE" \
+    -b cookiesFile -ik > project.txt
+    cat project.txt | grep "HTTP/2 404"
+    if [[ $? == 0 ]]; then
+        curl -X POST "$ALLURE_SERVER/allure-docker-service/projects" \
+        -H  "accept: */*" -H 'Content-Type: application/json' \
+        -H "X-CSRF-TOKEN: $CRSF_ACCESS_TOKEN_VALUE" \
+        -b cookiesFile -ik -d "{\"id\":\"$PROJECT_ID\"}"
+    fi    
     echo "------------------SEND-RESULTS------------------"
     curl -X POST "$ALLURE_SERVER/allure-docker-service/send-results?project_id=$PROJECT_ID" \
     -H 'Content-Type: multipart/form-data' \
