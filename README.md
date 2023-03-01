@@ -1,8 +1,5 @@
 # Send to Allure Docker Service action
 
-[![CI/CD](https://github.com/unickq/send-to-allure-docker-service-action/actions/workflows/main.yml/badge.svg)](https://github.com/unickq/send-to-allure-docker-service-action/actions/workflows/main.yml)
-[![GitHub release badge](https://badgen.net/github/release/unickq/send-to-allure-docker-service-action)](https://github.com/unickq/send-to-allure-docker-service-action/releases/latest)
-[![GitHub license badge](https://badgen.net/github/license/unickq/send-to-allure-docker-service-action)](http://www.apache.org/licenses/LICENSE-2.0)
 
 Sends results to [fescobar/allure-docker-service](https://github.com/fescobar/allure-docker-service).
 
@@ -38,8 +35,8 @@ ______
 ## Secrets
 
 - `ALLURE_SERVER_URL` - **required** server URL. 
-- `ALLURE_SERVER_USER` - username. 
-- `ALLURE_SERVER_PASSWORD` - password
+- `ALLURE_SERVER_USER` - **required** username. 
+- `ALLURE_SERVER_PASSWORD` - **required** password
 #### [How to set secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
 
 ## Example usage
@@ -47,7 +44,7 @@ ______
 ```yml
 jobs:
   allure-docker-send-example:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     name: Send to Allure Docker Service
 
@@ -59,10 +56,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: unickq/send-to-allure-docker-service-action@v1
+      - uses: ContaQuanto/send-to-allure-docker-service-action@main
         with:
           allure_results: allure-results
-          project_id: actions
+          project_id: ${{ steps.slugrepo.outputs.repo }}
           auth: true
           generate: true
 ```
