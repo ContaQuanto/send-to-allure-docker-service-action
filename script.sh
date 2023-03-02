@@ -4,6 +4,7 @@ ALLURE_RESULTS_DIRECTORY=$1
 PROJECT_ID=$2
 IS_SECURE=$3
 ALLURE_GENERATE=$4
+CLEAN_RESULT=$5
 
 SECURITY_USER=$ALLURE_SERVER_USER
 SECURITY_PASS=$ALLURE_SERVER_PASSWORD
@@ -68,7 +69,15 @@ if [[ "$IS_SECURE" == "true" ]]; then
         -H  "accept: */*" -H 'Content-Type: application/json' \
         -H "X-CSRF-TOKEN: $CRSF_ACCESS_TOKEN_VALUE" \
         -b cookiesFile -ik -d "{\"id\":\"$PROJECT_ID\"}"
-    fi    
+    fi
+    echo "------------------CLEAR-RESULTS------------------"
+    if [[ "$CLEAN_RESULT" == "true" ]]; then
+        curl -X GET "$ALLURE_SERVER/allure-docker-service/clean-results?project_id=$PROJECT_ID" \
+        -H  "accept: */*" \
+        -H 'Content-Type: multipart/form-data' \
+        -H "X-CSRF-TOKEN: $CRSF_ACCESS_TOKEN_VALUE" \
+        -b cookiesFile -ik
+    fi
     echo "------------------SEND-RESULTS------------------"
     curl -X POST "$ALLURE_SERVER/allure-docker-service/send-results?project_id=$PROJECT_ID" \
     -H 'Content-Type: multipart/form-data' \
